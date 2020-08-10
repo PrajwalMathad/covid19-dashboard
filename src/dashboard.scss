@@ -20,13 +20,13 @@ $active-color: #ffff00;
     .title {
       font-size: 50px;
       font-weight: bold;
-      margin-left: 160px;
+      margin-left: 210px;
     }
     .date {
       float: right;
-      font-size: 24px;
+      font-size: 30px;
       line-height: 66px;
-      font-weight: 400;
+      font-weight: 700;
       margin-right: 30px;
     }
   }
@@ -55,10 +55,10 @@ $active-color: #ffff00;
         border-bottom: 2px solid whitesmoke;
         border-radius: 6px;
         width: 25%;
-        height: 100px;
+        height: 85px;
         background: #11093f;
         .count {
-          font-size: 40px;
+          font-size: 30px;
           font-weight: 600;
           color: white;
         }

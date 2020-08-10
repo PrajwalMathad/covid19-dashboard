@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import { Line, Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 
 const moment = require('moment');
 const axios = require('axios');
@@ -53,12 +53,13 @@ const Dashboard = () => {
   const [countryCount, setCounrtyCount] = useState({});
   const [countryList, setCountryList] = useState([]);
   const [searchKey, setSearchKey] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [chartLabels, setChartLabels] = useState([]);
   const [confirmedLine, setConfirmedLine] = useState([]);
   const [deathLine, setDeathLine] = useState([]);
   const [recoveredLine, setRecoveredLine] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState({ "name": 'India', "alpha3Code": "IND" });
+  
+  const selectedDate = new Date();
 
   const getGlobalCount = () => {
     return axios.get('https://covidapi.info/api/v1/global');
@@ -91,7 +92,7 @@ const Dashboard = () => {
 
   const countryData = (data) => {
     return (
-      <div className="country-row" onClick={changeSelectedCountry.bind(null, data)}>
+      <div key={data.alpha3Code} className="country-row" onClick={changeSelectedCountry.bind(null, data)}>
         {data.name}
       </div>
     )
@@ -277,7 +278,7 @@ const Dashboard = () => {
             <div className="margin-left-20">Dataset : <code><a href="https://github.com/CSSEGISandData/COVID-19" rel="noopener noreferrer" target="_blank"> John Hopkins University</a></code></div>
             <div className="margin-15">
               <code className="made-by">Coded with <FavoriteIcon className="love" /> by Prajwal
-              <a href="https://github.com/PrajwalMathad" rel="noopener noreferrer" target="_blank"><i class="fab fa-github"></i></a>
+              <a href="https://github.com/PrajwalMathad" rel="noopener noreferrer" target="_blank"><i className="fab fa-github"></i></a>
               </code>
             </div>
           </div>
