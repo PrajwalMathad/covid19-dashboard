@@ -1,54 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import TextField from '@material-ui/core/TextField';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import { Line } from 'react-chartjs-2';
+import ApiStore from './apiStore'
+import Card from './card';
+import Chart from './chart';
 
 const moment = require('moment');
-const axios = require('axios');
-
-const CssTextField = withStyles({
-  root: {
-    '& input': {
-      color: 'whitesmoke',
-    },
-    '& label': {
-      color: 'whitesmoke'
-    },
-    '& label.Mui-focused': {
-      color: '#448aff',
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: '#448aff',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: 'whitesmoke',
-      },
-      '&:hover fieldset': {
-        borderColor: 'whitesmoke',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#448aff',
-      },
-    },
-  },
-})(TextField);
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  margin: {
-    margin: '1vw 1vw 1vw 0',
-    width: '90%'
-  },
-}));
 
 const Dashboard = () => {
-  const classes = useStyles();
-
   const [globalCount, setGlobalCount] = useState({});
   const [countryCount, setCounrtyCount] = useState({});
   const [countryList, setCountryList] = useState([]);
@@ -58,29 +16,14 @@ const Dashboard = () => {
   const [deathLine, setDeathLine] = useState([]);
   const [recoveredLine, setRecoveredLine] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState({ "name": 'India', "alpha3Code": "IND" });
-  
+
   const selectedDate = new Date();
-
-  const getGlobalCount = () => {
-    return axios.get('https://covidapi.info/api/v1/global');
-  }
-
-  const getCountryCount = (code) => {
-    return axios.get(`https://covidapi.info/api/v1/country/${code}/latest`);
-  }
-
-  const getCountryChartCount = (code) => {
-    return axios.get(`https://covidapi.info/api/v1/country/${code}/timeseries/${moment(selectedDate).subtract(30 ,'days').format('YYYY-MM-DD')}/${moment(selectedDate).format('YYYY-MM-DD')}`);
-  }
-
-  const getCountryCodes = () => {
-    return axios.get(`https://restcountries.eu/rest/v2/all`);
-  }
 
   const changeSelectedCountry = (country) => {
     setSelectedCountry(country);
   }
 
+  // To list the countries with and without search 
   const countryListData = () => {
     if (searchKey) {
       let result = countryList.filter(o => o.name.toLowerCase().includes(searchKey.toLowerCase()));
@@ -90,6 +33,7 @@ const Dashboard = () => {
     }
   }
 
+  // Returns each contry list row
   const countryData = (data) => {
     return (
       <div key={data.alpha3Code} className="country-row" onClick={changeSelectedCountry.bind(null, data)}>
@@ -98,35 +42,54 @@ const Dashboard = () => {
     )
   }
 
+  // Search for country
   const searchHandler = (event) => {
     const val = event.target.value;
     setSearchKey(val);
   }
 
   useEffect(() => {
-    getGlobalCount().then((response) => {
-      setGlobalCount(response.data.result);
+    // Gets the global count
+    ApiStore.getGlobalCount().then((response) => {
+      setGlobalCount({
+        Confirmed: response.data.result.confirmed,
+        Deaths: response.data.result.deaths,
+        Recovered: response.data.result.recovered,
+        Active: response.data.result.confirmed - response.data.result.recovered - response.data.result.deaths
+      });
     }, (error) => {
-
+      setGlobalCount({
+        "Confirmed": "NA",
+        "Deaths": "NA",
+        "Recovered": "NA",
+        "Active": "NA"
+      })
     });
   }, []);
 
   useEffect(() => {
-    getCountryCount(selectedCountry.alpha3Code).then((response) => {
+    // Gets the country count for the last available day and for the last 30 days for the chart plot
+    // Takes 3 letter code of country to fetch the data 
+    ApiStore.getCountryCount(selectedCountry.alpha3Code).then((response) => {
       const data = Object.keys(response.data.result);
       data.forEach((key) => {
-        setCounrtyCount(response.data.result[key]);
+        setCounrtyCount({
+          Confirmed: response.data.result[key].confirmed,
+          Deaths: response.data.result[key].deaths,
+          Recovered: response.data.result[key].recovered,
+          Active: response.data.result[key].confirmed - response.data.result[key].recovered - response.data.result[key].deaths
+        });
       })
     }, (error) => {
       setCounrtyCount({
-        "confirmed": "N/A",
-        "deaths": "N/A",
-        "recovered": "N/A",
-        "active": "N/A"
+        "Confirmed": "NA",
+        "Deaths": "NA",
+        "Recovered": "NA",
+        "Active": "NA"
       })
     });
 
-    getCountryChartCount(selectedCountry.alpha3Code).then((response) => {
+    ApiStore.getCountryChartCount(selectedCountry.alpha3Code, selectedDate, moment).then((response) => {
       const data = Object.keys(response.data.result);
       const labels = [];
       const confirmed = [];
@@ -147,7 +110,8 @@ const Dashboard = () => {
   }, [selectedCountry]);
 
   useEffect(() => {
-    getCountryCodes().then((response) => {
+    // To get the countyr list and the corresponding 3 letter codes to get the covid data
+    ApiStore.getCountryCodes().then((response) => {
       const filteredlist = [];
       filteredlist.push(response.data.map((one) => {
         return ({ 'name': one.name, 'code': one.alpha3Code })
@@ -155,6 +119,14 @@ const Dashboard = () => {
       setCountryList(response.data);
     })
   }, []);
+
+  // Shows individual counts 
+  const showCards = (details) => {
+    const data = Object.keys(details);
+    return data.map((key) => {
+      return <Card label={key} count={details[key]} />
+    })
+  }
 
   return (
     <div className="App">
@@ -165,111 +137,29 @@ const Dashboard = () => {
         </div>
         <div className="display-flex">
           <div className="card-block">
-            <div className="card-container-title">Global</div>
+            <div className="card-container-title">World</div>
             <div className="card-container">
-              <div className="cards">
-                <div className="confirmed-card">Confirmed</div>
-                <div className="count">{globalCount.confirmed}</div>
-              </div>
-              <div className="cards">
-                <div className="death-card">Death</div>
-                <div className="count">{globalCount.deaths}</div>
-              </div>
-              <div className="cards">
-                <div className="recovered-card">Recovered</div>
-                <div className="count">{globalCount.recovered}</div>
-              </div>
-              <div className="cards">
-                <div className="active-card">Active</div>
-                <div className="count">{globalCount.confirmed - globalCount.recovered - globalCount.deaths}</div>
-              </div>
+              {showCards(globalCount)}
             </div>
           </div>
           <div className="card-block no-boder">
             <div className="card-container-title">{selectedCountry.name}</div>
             <div className="card-container">
-              <div className="cards">
-                <div className="confirmed-card">Confirmed</div>
-                <div className="count">{countryCount.confirmed}</div>
-              </div>
-              <div className="cards">
-                <div className="death-card">Death</div>
-                <div className="count">{countryCount.deaths}</div>
-              </div>
-              <div className="cards">
-                <div className="recovered-card">Recovered</div>
-                <div className="count">{countryCount.recovered}</div>
-              </div>
-              <div className="cards">
-                <div className="active-card">Active</div>
-                {countryCount.active ? <div className="count">{countryCount.active}</div> : <div className="count">{countryCount.confirmed - countryCount.recovered - countryCount.deaths}</div>}
-              </div>
-
+              {showCards(countryCount)}
             </div>
           </div>
         </div>
         <div className="details-container">
           <div className="left-panel">
-            <CssTextField onChange={searchHandler} value={searchKey} className={classes.margin} label="Search by Country" variant="outlined" id="custom-css-outlined-input" />
+            <input className="search-field" onChange={searchHandler} value={searchKey} placeholder="Search by Country" ></input>
             <div className="country-list">
               {countryList && countryList.length ? countryListData() : <span>No list</span>}
             </div>
           </div>
           <div className="right-panel">
             <div className="chart-container">
-              <Line
-                width={500}
-                height={180}
-                data={{
-                  labels: chartLabels,
-                  datasets: [
-                    {
-                      label: 'Confirmed',
-                      fill: false,
-                      lineTension: 0.5,
-                      color: 'rgb(239,245,252,1)',
-                      backgroundColor: 'rgb(68,138,255,1)',
-                      pointBackgroundColor: 'rgb(68,138,255,0.8)',
-                      borderColor: 'rgb(68,138,255,1)',
-                      borderWidth: 2,
-                      data: confirmedLine
-                    },
-                    {
-                      label: 'Deaths',
-                      fill: false,
-                      lineTension: 0.5,
-                      color: 'rgb(239,245,252,1)',
-                      backgroundColor: 'rgb(255,82,82,1)',
-                      pointBackgroundColor: 'rgb(255,82,82,0.8)',
-                      borderColor: 'rgb(255,82,82,1)',
-                      borderWidth: 2,
-                      data: deathLine
-                    },
-                    {
-                      label: 'Recovered',
-                      fill: false,
-                      lineTension: 0.5,
-                      color: 'rgb(239,245,252,1)',
-                      backgroundColor: 'rgb(178,255,89,1)',
-                      pointBackgroundColor: 'rgb(178,255,89,0.8)',
-                      borderColor: 'rgb(178,255,89,1)',
-                      borderWidth: 2,
-                      data: recoveredLine
-                    }
-                  ]
-                }}
-                options={{
-                  title: {
-                    display: false
-                  },
-                  legend: {
-                    display: true,
-                    position: 'top'
-                  }
-                }}
-              />
+              <Chart chartLabels={chartLabels} confirmedLine={confirmedLine} deathLine={deathLine} recoveredLine={recoveredLine} />
             </div>
-
           </div>
         </div>
         <div className="footer">

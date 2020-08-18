@@ -62,22 +62,22 @@ $active-color: #ffff00;
           font-weight: 600;
           color: white;
         }
-        .confirmed-card {
+        .Confirmed-card {
           color: $confirmed-color;
           font-weight: 500;
         }
       
-        .death-card {
+        .Deaths-card {
           color: $death-color;
           font-weight: 500;
         }
       
-        .recovered-card {
+        .Recovered-card {
           color: $recovered-color;
           font-weight: 500;
         }
       
-        .active-card {
+        .Active-card {
           color: $active-color;
           font-weight: 500;
         }
@@ -95,6 +95,17 @@ $active-color: #ffff00;
       background: #11093f;
       margin-left: 25px;
       border-radius: 6px;
+      .search-field {
+        width: 80%;
+        background: #11093f;
+        color: #eff5fc;
+        border: 1px solid whitesmoke;
+        border-radius: 4px;
+        height: 20px;
+        padding: 5px;
+        font-size: 14px;
+        margin: 10px 0;
+      }
       .country-list {
         height: 335px;
         overflow-y: auto;
@@ -191,19 +202,19 @@ $active-color: #ffff00;
           .count {
             font-size: 4vw;
           }
-          .confirmed-card {
+          .Confirmed-card {
             font-size: 3.5vw;
           }
         
-          .death-card {
+          .Deaths-card {
             font-size: 3.5vw;
           }
         
-          .recovered-card {
+          .Recovered-card {
             font-size: 3.5vw;
           }
         
-          .active-card {
+          .Active-card {
             font-size: 3.5vw;
           }
         }
