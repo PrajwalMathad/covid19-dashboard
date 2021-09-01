@@ -229,8 +229,9 @@ $active-color: #ffff00;
       display: block;
       .left-panel{
         width: 90%;
-        margin-left: 0 5vw;
+        margin-left: 5vw;
         border-radius: 6px;
+        height: auto;
         .MuiFormControl-root {
           .MuiInputLabel-outlined {
             line-height: 0;
