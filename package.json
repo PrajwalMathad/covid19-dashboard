@@ -14,7 +14,7 @@
     "axios": "^0.21.1",
     "chart.js": "^2.9.4",
     "gh-pages": "^2.2.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "node-sass": "^4.13.1",
     "react": "^16.13.1",
     "react-chartjs-2": "^2.9.0",
