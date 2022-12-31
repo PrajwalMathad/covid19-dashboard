@@ -50,6 +50,7 @@ $active-color: #ffff00;
     }
     .card-container {
       display: flex;
+      justify-content: center;
       .cards {
         margin: 0 10px;
         border-bottom: 2px solid whitesmoke;

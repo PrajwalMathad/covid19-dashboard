@@ -31,17 +31,17 @@ const Chart = (props) => {
                       borderWidth: 2,
                       data: props.deathLine
                     },
-                    {
-                      label: 'Recovered',
-                      fill: false,
-                      lineTension: 0.5,
-                      color: 'rgb(239,245,252,1)',
-                      backgroundColor: 'rgb(178,255,89,1)',
-                      pointBackgroundColor: 'rgb(178,255,89,0.8)',
-                      borderColor: 'rgb(178,255,89,1)',
-                      borderWidth: 2,
-                      data: props.recoveredLine
-                    }
+                    // {
+                    //   label: 'Recovered',
+                    //   fill: false,
+                    //   lineTension: 0.5,
+                    //   color: 'rgb(239,245,252,1)',
+                    //   backgroundColor: 'rgb(178,255,89,1)',
+                    //   pointBackgroundColor: 'rgb(178,255,89,0.8)',
+                    //   borderColor: 'rgb(178,255,89,1)',
+                    //   borderWidth: 2,
+                    //   data: props.recoveredLine
+                    // }
                   ]
                 }}
                 options={{
