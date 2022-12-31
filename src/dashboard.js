@@ -67,6 +67,21 @@ const Dashboard = () => {
           Confirmed: countryinfo[0].TotalConfirmed,
           Deaths: countryinfo[0].TotalDeaths,
         })
+        // To get the country list and the corresponding 3 letter codes to get the covid data
+        let countryList = [...response.data.Countries];
+        countryList.sort((a, b) => {
+          const nameA = a.Country.toLowerCase();
+          const nameB = b.Country.toLowerCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          // names must be equal
+          return 0;
+        })
+        setCountryList(countryList);
       } else {
         setCounrtyCount({
           Confirmed: "NA",
@@ -81,22 +96,6 @@ const Dashboard = () => {
         // "Active": "NA"
       })
     });
-    // To get the country list and the corresponding 3 letter codes to get the covid data
-    ApiStore.getCountryCodes().then((response) => {
-      response.data.sort((a, b) => {
-        const nameA = a.Country.toLowerCase();
-        const nameB = b.Country.toLowerCase();
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-        // names must be equal
-        return 0;
-      })
-      setCountryList(response.data);
-    })
   }, []);
 
   useEffect(() => {
@@ -175,7 +174,7 @@ const Dashboard = () => {
         </div>
         <div className="footer">
           <div className="credits">
-            <div>API : <code><a href="https://covidapi.info/" rel="noopener noreferrer" target="_blank"> covidapi.info</a></code></div>
+            <div>API : <code><a href="https://covid19api.com/" rel="noopener noreferrer" target="_blank"> COVID19 API</a></code></div>
             <div className="margin-left-20">Dataset : <code><a href="https://github.com/CSSEGISandData/COVID-19" rel="noopener noreferrer" target="_blank"> John Hopkins University</a></code></div>
             <div className="margin-15">
               <code className="made-by">Coded with <FavoriteIcon className="love" /> by Prajwal
